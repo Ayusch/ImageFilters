@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zomato.photofilters.imageprocessors.Filter
 
-class FiltersAdapter(val data: ArrayList<ThumbnailItem>, val imageUri: Uri?) :
+class FiltersAdapter(val data: ArrayList<ThumbnailItem>, val imageUri: Uri?, val listener: ThumbnailClickListener) :
     RecyclerView.Adapter<FiltersAdapter.FiltersViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FiltersViewHolder {
@@ -31,9 +31,23 @@ class FiltersAdapter(val data: ArrayList<ThumbnailItem>, val imageUri: Uri?) :
     }
 
 
-    class FiltersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class FiltersViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
         val imageView: ImageView = itemView.findViewById(R.id.item_filter)
         val textView: TextView = itemView.findViewById(R.id.tv_filter_name)
+
+        init {
+            imageView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            listener.onThumbnailClicked(data[adapterPosition].filter)
+        }
     }
+
+    interface ThumbnailClickListener {
+        fun onThumbnailClicked(filter: Filter)
+    }
+
 
 }
