@@ -1,5 +1,6 @@
 package com.example.instafilters
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,6 +31,15 @@ class MainActivity : AppCompatActivity() {
         imageUri = ImageUtils.getOutputMediaFileUri(MEDIA_TYPE_IMAGE, this)
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         startActivityForResult(cameraIntent, IMAGE_CAPTURE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_CAPTURE_REQUEST && resultCode == Activity.RESULT_OK) {
+            val intent = Intent(this, FiltersActivity::class.java)
+            intent.putExtra("imageUri", imageUri)
+            startActivity(intent)
+        }
     }
 
 }
