@@ -28,6 +28,7 @@ class FiltersActivity : AppCompatActivity(), ThumbnailAdapter.ThumbnailClickList
     private var mImageUri: Uri? = null
     private lateinit var rvThumbnail: RecyclerView
     private var mBitmap: Bitmap? = null
+    private var filteredBitmap: Bitmap? = null
     private lateinit var btnSend: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,16 +74,13 @@ class FiltersActivity : AppCompatActivity(), ThumbnailAdapter.ThumbnailClickList
     }
 
     override fun onClickThumbnail(filter: Filter) {
-        val bitmapCopy = mBitmap!!.copy(Bitmap.Config.ARGB_8888, true)
-        Glide.with(this).load(
-            Bitmap.createScaledBitmap(
-                filter.processFilter(bitmapCopy),
-                mBitmap?.width ?: 640,
-                mBitmap?.height ?: 640,
-                false
-            )
-        ).into(ivOriginalImage)
-        bitmapCopy.recycle()
+        filteredBitmap = Bitmap.createScaledBitmap(
+            filter.processFilter(mBitmap),
+            mBitmap?.width ?: 640,
+            mBitmap?.height ?: 640,
+            false
+        )
+        Glide.with(this).load(filteredBitmap).into(ivOriginalImage)
     }
 
     private fun setSendClickListener() {
@@ -91,7 +89,8 @@ class FiltersActivity : AppCompatActivity(), ThumbnailAdapter.ThumbnailClickList
                 val share = Intent(Intent.ACTION_SEND)
                 share.type = "image/png"
                 share.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                share.putExtra(Intent.EXTRA_STREAM, it)
+                share.putExtra(Intent.EXTRA_STREAM,
+                    filteredBitmap?.let { filtered -> ImageUtils.saveImage(filtered, this) })
                 startActivity(share)
             }
         }

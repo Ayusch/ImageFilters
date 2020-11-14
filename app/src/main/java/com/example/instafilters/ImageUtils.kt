@@ -1,6 +1,5 @@
 package com.example.instafilters
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,13 +10,11 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
-import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -117,5 +114,32 @@ object ImageUtils {
         } catch (e: Exception) {
             return null
         }
+    }
+
+    fun saveImage(image: Bitmap, context: Context): Uri? {
+        if (isExternalStorageAvailable()) {
+            val mediaStorageDir =
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val timeStamp =
+                SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            val fileName = "IMG_$timeStamp"
+            val fileType = ".jpg"
+
+            val mediaFile: File
+            try {
+                mediaFile = File.createTempFile(fileName, fileType, mediaStorageDir)
+                val fos = FileOutputStream(mediaFile)
+                image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                fos.flush()
+                fos.close()
+                val uri = FileProvider.getUriForFile(context, context.packageName +".FileProvider", mediaFile)
+
+                return uri
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        return null
     }
 }
