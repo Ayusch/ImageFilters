@@ -37,8 +37,22 @@ class FiltersActivity : AppCompatActivity() {
     }
 
     fun processRecyclerView() {
-        rvFilters.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val adapter = FiltersAdapter(FilterPack.getFilterPack(this), imageUri)
-        rvFilters.adapter = adapter
+        imageUri?.let {
+            rvFilters.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            val bitmap = ImageUtils.getBitmap(it, contentResolver)
+
+            ThumbnailManager.clearThumbnails()
+            val filterPack = FilterPack.getFilterPack(this)
+            for (filter in filterPack) {
+                val thumbnailItem = ThumbnailItem(bitmap, filter)
+                ThumbnailManager.addThumbnailItem(thumbnailItem)
+            }
+
+            val processedThumbs = ThumbnailManager.processThumbnail()
+
+            val adapter = FiltersAdapter(processedThumbs, imageUri)
+            rvFilters.adapter = adapter
+        }
+
     }
 }
