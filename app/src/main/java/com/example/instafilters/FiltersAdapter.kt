@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zomato.photofilters.imageprocessors.Filter
 
-class FiltersAdapter(val data: List<Filter>, val imageUri: Uri?) : RecyclerView.Adapter<FiltersAdapter.FiltersViewHolder>() {
+class FiltersAdapter(val data: List<Filter>, val imageUri: Uri?) :
+    RecyclerView.Adapter<FiltersAdapter.FiltersViewHolder>() {
 
 //    var data = ArrayList<ThumbnailItem>()
 //
@@ -28,9 +29,11 @@ class FiltersAdapter(val data: List<Filter>, val imageUri: Uri?) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: FiltersViewHolder, position: Int) {
-        holder.textView.text = data[position].name
+        val filter = data[position]
+        holder.textView.text = filter.name
         imageUri?.let {
-            Glide.with(holder.imageView.context).load(it).into(holder.imageView)
+            val bitmap = ImageUtils.getBitmap(imageUri, holder.imageView.context.contentResolver)
+            Glide.with(holder.imageView.context).load(filter.processFilter(bitmap)).into(holder.imageView)
         }
     }
 

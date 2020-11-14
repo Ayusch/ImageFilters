@@ -13,6 +13,13 @@ import com.bumptech.glide.Glide
 import com.zomato.photofilters.FilterPack
 
 class FiltersActivity : AppCompatActivity() {
+
+    companion object {
+        init {
+            System.loadLibrary("NativeImageProcessor")
+        }
+    }
+
     lateinit var imageView: ImageView
     lateinit var rvFilters: RecyclerView
     var imageUri: Uri? = null
